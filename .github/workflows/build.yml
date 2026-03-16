@@ -31,6 +31,9 @@ jobs:
         run: |
           pyinstaller --onefile --clean `
           --collect-all essentia `
+          --collect-submodules essentia `
+          --collect-binaries essentia `
+          --hidden-import essentia `
           --hidden-import essentia.standard `
           --name DJ_AutoRename_Macedo `
           dj_analyzer.py
