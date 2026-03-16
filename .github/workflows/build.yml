@@ -11,14 +11,13 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
-          architecture: 'x64' # Garante que seja 64 bits para o Essentia
+          architecture: 'x64'
 
       - name: Instalar Essentia e PyInstaller
         run: |
           python -m pip install --upgrade pip
-          pip install --no-cache-dir essentia==2.1b6.dev1110 pyinstaller
-          # Nota: Se a versão acima falhar, o comando abaixo tenta a versão padrão
-          # pip install essentia pyinstaller
+          # Usando uma versão que o servidor confirmou que possui (dev234)
+          pip install essentia==2.1b6.dev234 pyinstaller
 
       - name: Criar EXE
         run: |
