@@ -30,11 +30,10 @@ jobs:
       - name: Gerar executável
         run: |
           pyinstaller --onefile --clean `
-          --collect-all essentia `
-          --collect-submodules essentia `
-          --collect-binaries essentia `
-          --hidden-import essentia `
-          --hidden-import essentia.standard `
+          --hidden-import=essentia `
+          --hidden-import=essentia.standard `
+          --collect-submodules=essentia `
+          --collect-data=essentia `
           --name DJ_AutoRename_Macedo `
           dj_analyzer.py
 
