@@ -12,39 +12,41 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Instalar Python
+      - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.10"
           architecture: "x64"
 
-      - name: Atualizar pip
-        run: |
-          python -m pip install --upgrade pip
+      - name: Upgrade pip
+        run: python -m pip install --upgrade pip
 
       - name: Instalar dependências
         run: |
-          pip install essentia==2.1b6.dev184
           pip install pyinstaller
+          pip install essentia
+
+      - name: Verificar instalação do Essentia
+        run: |
+          python -c "import essentia; print('Essentia instalado com sucesso')"
 
       - name: Descobrir caminho do Essentia
-        id: essentia_path
         run: |
           python -c "import essentia, os; print(os.path.dirname(essentia.__file__))" > essentia_path.txt
-          set /p ESSENTIA_PATH=<essentia_path.txt
-          echo ESSENTIA_PATH=%ESSENTIA_PATH%>>%GITHUB_ENV
+          $path = Get-Content essentia_path.txt
+          echo "ESSENTIA_PATH=$path" >> $env:GITHUB_ENV
 
       - name: Build EXE
         run: |
-          pyinstaller dj_analyzer.py ^
-            --name DJ_AutoRename_Macedo ^
-            --onefile ^
-            --clean ^
-            --hidden-import=essentia ^
-            --hidden-import=essentia.standard ^
-            --add-data "%ESSENTIA_PATH%;essentia"
+          pyinstaller dj_analyzer.py `
+            --name DJ_AutoRename_Macedo `
+            --onefile `
+            --clean `
+            --hidden-import=essentia `
+            --hidden-import=essentia.standard `
+            --add-data "$env:ESSENTIA_PATH;essentia"
 
-      - name: Upload
+      - name: Upload EXE
         uses: actions/upload-artifact@v4
         with:
           name: DJ_AutoRename_Macedo
