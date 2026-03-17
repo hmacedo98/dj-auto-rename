@@ -1,4 +1,4 @@
-name: Gerar Executável DJ
+name: Build DJ Analyzer EXE
 
 on:
   push:
@@ -9,7 +9,7 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - name: Baixar repositório
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Instalar Python
@@ -27,17 +27,24 @@ jobs:
           pip install essentia==2.1b6.dev184
           pip install pyinstaller
 
-      - name: Gerar executável
+      - name: Descobrir caminho do Essentia
+        id: essentia_path
         run: |
-          pyinstaller --onefile --clean `
-          --hidden-import=essentia `
-          --hidden-import=essentia.standard `
-          --collect-submodules=essentia `
-          --collect-data=essentia `
-          --name DJ_AutoRename_Macedo `
-          dj_analyzer.py
+          python -c "import essentia, os; print(os.path.dirname(essentia.__file__))" > essentia_path.txt
+          set /p ESSENTIA_PATH=<essentia_path.txt
+          echo ESSENTIA_PATH=%ESSENTIA_PATH%>>%GITHUB_ENV
 
-      - name: Upload do executável
+      - name: Build EXE
+        run: |
+          pyinstaller dj_analyzer.py ^
+            --name DJ_AutoRename_Macedo ^
+            --onefile ^
+            --clean ^
+            --hidden-import=essentia ^
+            --hidden-import=essentia.standard ^
+            --add-data "%ESSENTIA_PATH%;essentia"
+
+      - name: Upload
         uses: actions/upload-artifact@v4
         with:
           name: DJ_AutoRename_Macedo
